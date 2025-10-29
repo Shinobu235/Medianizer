@@ -2,6 +2,9 @@ package com.moni.medianizer.app.model;
 
 import java.sql.*;
 
+/**
+ * Datenbankverbindung
+ */
 public class DatabaseManager {
 	private static final String DB_URL = "jdbc:sqlite:src/main/resources/data/library.db";
 	
@@ -13,6 +16,9 @@ public class DatabaseManager {
 		return DriverManager.getConnection(DB_URL);
 	}
 	
+	/**
+	 * Tabelle erstellen
+	 */
 	private void createTable() {
 		String sql = "CREATE TABLE IF NOT EXISTS media ("
 				+ "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -28,6 +34,13 @@ public class DatabaseManager {
 		}
 	}
 	
+	/**
+	 * Neuen Eintrag hinzufügen
+	 * @param title
+	 * @param artist
+	 * @param amount
+	 * @param type
+	 */
 	public void insert(String title, String artist, int amount, String type) {
 		String sql = "INSERT INTO media(title, artist, amount, type) VALUES(?,?,?,?)";
 		try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -42,6 +55,12 @@ public class DatabaseManager {
 		}
 	}
 	
+	/**
+	 * Select-Befehl mit folgenden Parametern
+	 * @param title
+	 * @param artist
+	 * @param type
+	 */
 	public void select(String title, String artist, String type) {
 		String sql = "SELECT title, artist, type FROM media WHERE title = '" + title + 
 				"' AND artist = '" + artist + 
