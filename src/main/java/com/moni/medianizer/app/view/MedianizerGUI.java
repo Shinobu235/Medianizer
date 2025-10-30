@@ -2,19 +2,19 @@ package com.moni.medianizer.app.view;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.moni.medianizer.app.Constants;
+import com.moni.medianizer.app.controller.listener.MediaListener;
+import com.moni.medianizer.app.controller.listener.OkButtonListener;
 
 /**
  * Startfenster
  */
 public class MedianizerGUI {
+	
 	private static MedianizerGUI instance;
 	private JFrame frame = new JFrame(Constants.S_APP_NAME);
 	private SelectPanel sPanel = new SelectPanel();
@@ -31,9 +31,11 @@ public class MedianizerGUI {
 	 * @return instance
 	 */
 	public static MedianizerGUI getInstance() {
+		
 		if (instance == null) {
 			instance = new MedianizerGUI();
 		}
+		
 		return instance;
 	}
 	
@@ -43,29 +45,22 @@ public class MedianizerGUI {
 	private void createGUI() {
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		jpSelect.add(sPanel, BorderLayout.CENTER);
-		jbOK.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println();
-				
-			}
+		jbOK.addActionListener(new OkButtonListener(sPanel));
+		jbOK.setEnabled(false);
+		MediaListener mediaListener = new MediaListener(sPanel, selected -> {
+			jbOK.setEnabled(selected != Constants.S_DEFAULT);
 		});
+		sPanel.addTypeChangeListener(mediaListener);
+		
+		jpSelect.add(sPanel, BorderLayout.CENTER);
+		
 		jpSelect.add(jpOK, BorderLayout.EAST);
 		jpOK.add(jbOK);
-		jbOK.addActionListener(e -> {
-			String sType = sPanel.getType();
-			String sTitle = sPanel.getTitle();
-			String sInterpret = sPanel.getInterpret();
-			
-			JOptionPane.showMessageDialog(frame, "Medium: " + sType + " Titel: " + sTitle + " Interpret: " + sInterpret, "Eingabe bestätigt", JOptionPane.INFORMATION_MESSAGE);
-		});
 	
 		frame.add(jpSelect);
 		frame.pack();
 		frame.setMinimumSize(frame.getSize());
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-	}
+	}	
 }

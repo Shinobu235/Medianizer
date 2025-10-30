@@ -9,11 +9,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.moni.medianizer.app.Constants;
+import com.moni.medianizer.app.controller.listener.MediaListener;
 
 /**
  * Panel mit Medium, Titel und Interpret
  */
-public class SelectPanel extends JPanel {
+public class SelectPanel extends JPanel implements InputProvider {
+	
 	private static final long serialVersionUID = -2732850112048175347L;
 	
 	private JComboBox<String> jcbTypes = new JComboBox<>(Constants.SA_TYPES);
@@ -27,10 +29,12 @@ public class SelectPanel extends JPanel {
 	}
 	
 	private void init() {
-		this.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
 		
+		this.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
 		jtfTitle.setPreferredSize(new Dimension(100,25));
+		jtfTitle.setEnabled(false);
 		jtfInterpret.setPreferredSize(new Dimension(100,25));
+		jtfInterpret.setEnabled(false);
 		
 		this.add(jcbTypes);
 		this.add(jlTitle);
@@ -39,15 +43,48 @@ public class SelectPanel extends JPanel {
 		this.add(jtfInterpret);
 	}
 	
+	/**
+	 * Fügt der ComboBox für die Typ-Auswahl den Listener hinzu
+	 * @param l
+	 */
+	public void addTypeChangeListener(MediaListener l) {
+		jcbTypes.addItemListener(l);
+	}
+
+	@Override
 	public String getType() {
 		return (String) jcbTypes.getSelectedItem();
 	}
-	
+
+	@Override
 	public String getTitle() {
-		return jtfTitle.getText();
+		return jtfTitle.getText().trim();
+	}
+
+	@Override
+	public String getInterpret() {
+		return jtfInterpret.getText().trim();
+	}
+
+	@Override
+	public void setInterpretEnabled(boolean enabled) {
+		jtfInterpret.setEnabled(enabled);	
+	}
+
+	@Override
+	public void clearInterpret() {
+		jtfInterpret.setText("");
+		
+	}
+
+	@Override
+	public void setTitleEnabled(boolean enabled) {
+		jtfTitle.setEnabled(enabled);	
+	}
+
+	@Override
+	public void clearTitle() {
+		jtfTitle.setText("");
 	}
 	
-	public String getInterpret() {
-		return jtfInterpret.getText();
-	}
 }

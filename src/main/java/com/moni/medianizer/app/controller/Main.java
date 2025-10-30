@@ -13,7 +13,5 @@ public class Main {
 		SwingUtilities.invokeLater(() -> {
 			MedianizerGUI.getInstance();
 		});
-
 	}
-
 }
