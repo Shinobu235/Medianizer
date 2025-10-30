@@ -4,6 +4,12 @@
   <artifactId>medianizer1.0</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>Medianizer1.0</name>
+  
+  <properties>
+  	<maven.compiler.source>21</maven.compiler.source>
+  	<maven.compiler.target>21</maven.compiler.target>
+  </properties>
+  
   <dependencies>
   	<!--JavaFX-->
   	<dependency>
@@ -23,4 +29,18 @@
   		<version>3.36.0</version>
   	</dependency>
   </dependencies>
+  
+  <build>
+  	<plugins>
+  		<!--Compiler Plugin-->
+  		<plugin>
+  			<groupId>org.apache.maven.plugins</groupId>
+  			<artifactId>maven-compiler-plugin</artifactId>
+  			<version>3.13.0</version>
+  			<configuration>
+  				<release>21</release>
+  			</configuration>
+  		</plugin>
+  	</plugins>
+  </build>
 </project>
