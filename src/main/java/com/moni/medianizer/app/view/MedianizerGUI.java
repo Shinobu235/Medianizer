@@ -11,7 +11,7 @@ import com.moni.medianizer.app.controller.listener.MediaListener;
 import com.moni.medianizer.app.controller.listener.OkButtonListener;
 
 /**
- * Startfenster
+ * Startfenster 
  */
 public class MedianizerGUI {
 	

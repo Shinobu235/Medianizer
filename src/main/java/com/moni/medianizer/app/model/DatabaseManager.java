@@ -3,7 +3,7 @@ package com.moni.medianizer.app.model;
 import java.sql.*;
 
 /**
- * Datenbankverbindungen
+ * Datenbankverbindungen 
  */
 public class DatabaseManager {
 	private static final String DB_URL = "jdbc:sqlite:src/main/resources/data/library.db";
@@ -26,6 +26,7 @@ public class DatabaseManager {
 	 * Tabelle erstellen
 	 */
 	private void createTables() {
+		//Drop befehle löschen, wenn Duplikate nicht mehr  möglich sind!
 		String sDropMedia = "DROP TABLE IF EXISTS media;";
 		String sDropFilms = "DROP TABLE IF EXISTS films;";
 		String sDropCDs = "DROP TABLE IF EXISTS cds;";

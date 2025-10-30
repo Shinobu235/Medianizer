@@ -1,7 +1,7 @@
 package com.moni.medianizer.app.view;
 
 /**
- * Interface für SelectPanel
+ * Interface für SelectPanel 
  */
 public interface InputProvider {
 	
