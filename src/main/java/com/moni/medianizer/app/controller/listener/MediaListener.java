@@ -7,6 +7,9 @@ import com.moni.medianizer.app.Constants;
 import com.moni.medianizer.app.view.InputProvider;
 import com.moni.medianizer.app.view.TypeSelectionCallback;
 
+/**
+ * Listener für Dropdown
+ */
 public class MediaListener implements ItemListener {
 	
 	private InputProvider input;

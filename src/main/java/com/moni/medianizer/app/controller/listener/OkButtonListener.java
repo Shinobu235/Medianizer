@@ -7,7 +7,7 @@ import com.moni.medianizer.app.model.DatabaseManager;
 import com.moni.medianizer.app.view.InputProvider;
 
 /**
- * Listener für den OK-Button der Benutzerschnittstelle 1
+ * Listener für den OK-Button der Benutzerschnittstelle 1 
  */
 public class OkButtonListener implements ActionListener {
 	
