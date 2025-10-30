@@ -21,7 +21,7 @@ public class MedianizerGUI {
 	private JPanel jpSelect = new JPanel(new BorderLayout(20, 20));
 	private JPanel jpOK = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
 	private JButton jbOK = new JButton(Constants.S_OK);
-	
+	private String test;
 	private MedianizerGUI() {
 		createGUI();
 	}

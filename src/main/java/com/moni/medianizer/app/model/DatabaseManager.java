@@ -7,6 +7,7 @@ import java.sql.*;
  */
 public class DatabaseManager {
 	private static final String DB_URL = "jdbc:sqlite:src/main/resources/data/library.db";
+	private String test;
 	
 	public DatabaseManager() {
 		createTables();

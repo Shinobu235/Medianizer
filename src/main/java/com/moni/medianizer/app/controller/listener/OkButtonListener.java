@@ -13,6 +13,7 @@ public class OkButtonListener implements ActionListener {
 	
 	private DatabaseManager dm = new DatabaseManager();
 	private InputProvider input;
+	private String test;
 	
 	public OkButtonListener(InputProvider input) {
 		this.input = input;

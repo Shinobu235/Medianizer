@@ -4,7 +4,7 @@ package com.moni.medianizer.app.view;
  * Interface für SelectPanel 
  */
 public interface InputProvider {
-	
+	String test = "";
 	String getType();
 	String getTitle();
 	String getInterpret();
