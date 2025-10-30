@@ -4,7 +4,7 @@
   <artifactId>medianizer1.0</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>Medianizer1.0</name>
-   
+  
   <properties>
   	<maven.compiler.source>21</maven.compiler.source>
   	<maven.compiler.target>21</maven.compiler.target>

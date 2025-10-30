@@ -12,4 +12,5 @@ public interface InputProvider {
 	void setTitleEnabled(boolean enabled);
 	void clearInterpret();
 	void clearTitle();
+	
 }

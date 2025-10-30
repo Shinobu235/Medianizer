@@ -1,7 +1,7 @@
 package com.moni.medianizer.app;
 
 /**
- * Konstanten 
+ * Konstanten
  */
 public class Constants {
 	

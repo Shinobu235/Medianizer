@@ -7,7 +7,7 @@ import com.moni.medianizer.app.model.DatabaseManager;
 import com.moni.medianizer.app.view.InputProvider;
 
 /**
- * Listener für den OK-Button der Benutzerschnittstelle 1 
+ * Listener für den OK-Button der Benutzerschnittstelle 1
  */
 public class OkButtonListener implements ActionListener {
 	
@@ -16,6 +16,7 @@ public class OkButtonListener implements ActionListener {
 	
 	public OkButtonListener(InputProvider input) {
 		this.input = input;
+		//DummyDaten
 		dm.insertFilm("Film eins", 1);
 		dm.insertCD("CD eins", "Interpret eins", 2);
 

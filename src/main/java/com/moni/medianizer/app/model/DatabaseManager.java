@@ -3,7 +3,7 @@ package com.moni.medianizer.app.model;
 import java.sql.*;
 
 /**
- * Datenbankverbindungen 
+ * Datenbankverbindungen
  */
 public class DatabaseManager {
 	private static final String DB_URL = "jdbc:sqlite:src/main/resources/data/library.db";

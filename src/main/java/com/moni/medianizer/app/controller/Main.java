@@ -5,7 +5,7 @@ import javax.swing.SwingUtilities;
 import com.moni.medianizer.app.view.MedianizerGUI;
 
 /**
- * Main-Klasse Medianizer 
+ * Main-Klasse Medianizer
  */
 public class Main {
 

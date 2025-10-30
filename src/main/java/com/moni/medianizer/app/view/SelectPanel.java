@@ -12,7 +12,7 @@ import com.moni.medianizer.app.Constants;
 import com.moni.medianizer.app.controller.listener.MediaListener;
 
 /**
- * Panel mit Medium, Titel und Interpret 
+ * Panel mit Medium, Titel und Interpret
  */
 public class SelectPanel extends JPanel implements InputProvider {
 	
