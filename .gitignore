@@ -1,1 +1,24 @@
+#Maven
 /target/
+
+#Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+#Java
+*.class
+
+#Logs
+*.log
+
+#Windows
+.DS_Store
+thumbs.db
+
+#Datenbanken / lokale Dateien
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
