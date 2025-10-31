@@ -13,30 +13,16 @@ import com.moni.medianizer.app.controller.listener.OkButtonListener;
 /**
  * Startfenster 
  */
-public class MedianizerGUI {
+public class FirstGUI {
 	
-	private static MedianizerGUI instance;
 	private JFrame frame = new JFrame(Constants.S_APP_NAME);
 	private SelectPanel sPanel = new SelectPanel();
 	private JPanel jpSelect = new JPanel(new BorderLayout(20, 20));
 	private JPanel jpOK = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
 	private JButton jbOK = new JButton(Constants.S_OK);
-	private String test;
-	private MedianizerGUI() {
-		createGUI();
-	}
 	
-	/**
-	 * Singleton Startfenster
-	 * @return instance
-	 */
-	public static MedianizerGUI getInstance() {
-		
-		if (instance == null) {
-			instance = new MedianizerGUI();
-		}
-		
-		return instance;
+	public FirstGUI() {
+		createGUI();
 	}
 	
 	/**

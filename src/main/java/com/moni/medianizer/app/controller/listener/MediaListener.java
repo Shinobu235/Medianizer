@@ -14,7 +14,6 @@ public class MediaListener implements ItemListener {
 	
 	private InputProvider input;
 	private TypeSelectionCallback call;
-	private String test;
 	
 	public MediaListener(InputProvider input, TypeSelectionCallback call) {
 		this.input = input;

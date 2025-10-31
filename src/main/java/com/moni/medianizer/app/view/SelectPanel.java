@@ -17,12 +17,13 @@ import com.moni.medianizer.app.controller.listener.MediaListener;
 public class SelectPanel extends JPanel implements InputProvider {
 	
 	private static final long serialVersionUID = -2732850112048175347L;
-	private String test;
+	
 	private JComboBox<String> jcbTypes = new JComboBox<>(Constants.SA_TYPES);
 	private JLabel jlTitle = new JLabel(Constants.S_TITLE);
 	private JTextField jtfTitle = new JTextField();
 	private JLabel jlInterpret = new JLabel(Constants.S_INTERPRET);
 	private JTextField jtfInterpret = new JTextField();
+	private int iAmount;
 	
 	public SelectPanel() {
 		init();
@@ -86,5 +87,20 @@ public class SelectPanel extends JPanel implements InputProvider {
 	public void clearTitle() {
 		jtfTitle.setText("");
 	}
-	
+
+	@Override
+	public void setType(String type) {
+		this.jcbTypes.setSelectedItem(type);
+		System.out.println(type);
+	}
+
+	@Override
+	public void setTitle(String title) {
+		this.jtfTitle.setText(title);
+	}
+
+	@Override
+	public void setInterpret(String interpret) {
+		this.jtfInterpret.setText(interpret);
+	}
 }
