@@ -16,6 +16,7 @@ public class Constants {
 	public static final String S_INTERPRET = "Interpret";
 	public static final String S_OK = "OK";
 	public static final String S_TITLE = "Titel";
+	public static final String S_TEST_ZWEI = "";
 	
 	public static final String[] SA_TYPES = {S_DEFAULT, S_FILM, S_CD};
 }
