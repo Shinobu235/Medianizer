@@ -2,7 +2,6 @@ package com.moni.medianizer.app.model;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Datenbankverbindungen 
@@ -10,7 +9,18 @@ import java.util.List;
 public class DatabaseManager {
 	private static final String DB_URL = "jdbc:sqlite:src/main/resources/data/library.db";
 	
-	public DatabaseManager() {
+	private static DatabaseManager instance;
+	
+	public static DatabaseManager getInstance() {
+		
+		if (instance == null) {
+			instance = new DatabaseManager();
+		}
+		
+		return instance;
+	}
+	
+	private DatabaseManager() {
 		createTables();
 	}
 	
