@@ -67,10 +67,38 @@ public class DatabaseManager {
 			stmt.execute(sCreateFilm);
 			stmt.execute(sCreateCD);
 			
-			System.out.println("Tabellen erstellt");
-			
 		} catch (SQLException e) {
 			System.err.println("Fehler beim Erstellen der Tabelle: " + e.getMessage());
+		}
+	}
+	
+	public boolean insert(Media media) {
+		if (media instanceof Film) {
+			return insertFilm((Film) media);
+		} else if (media instanceof CD) {
+			return insertCD((CD) media);
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean update(Media media) {
+		if (media instanceof Film) {
+			return updateFilm((Film) media);
+		} else if (media instanceof CD) {
+			return updateCD((CD) media);
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean delete(Media media) {
+		if (media instanceof Film) {
+			return deleteFilm((Film) media);
+		} else if (media instanceof CD) {
+			return deleteCD((CD) media);
+		} else {
+			return false;
 		}
 	}
 	
@@ -79,7 +107,7 @@ public class DatabaseManager {
 	 * @param title
 	 * @param amount
 	 */
-	public void insertFilm(String title, int amount) {
+	private boolean insertFilm(Film film) {
 		
 		String sInsertMedia = "INSERT INTO 	media (title, amount, type) VALUES (?, ?, 'Film');";
 		String sInsertFilms = "INSERT INTO films (media_id) VALUES (last_insert_rowid());";
@@ -88,16 +116,16 @@ public class DatabaseManager {
 				PreparedStatement psFilms = conn.prepareStatement(sInsertFilms)) {
 			
 			//Einfügen in media
-			psMedia.setString(1, title);
-			psMedia.setInt(2, amount);
+			psMedia.setString(1, film.getTitle());
+			psMedia.setInt(2, film.getAmount());
 			psMedia.executeUpdate();
 			
 			//Einfügen in films
 			psFilms.executeUpdate();
 			
-			System.out.println("Film eingefügt");
+			return true;
 		} catch (SQLException e) {
-			System.out.println("Fehler beim Einfügen des Films: " + e.getMessage());
+			return false;
 		}
 		
 	}
@@ -108,7 +136,7 @@ public class DatabaseManager {
 	 * @param interpret
 	 * @param amount
 	 */
-	public void insertCD(String title, String interpret, int amount) {
+	private boolean insertCD(CD cd) {
 		String sInsertMedia = "INSERT INTO 	media (title, amount, type) VALUES (?, ?, 'CD');";
 		String sInsertCDs = "INSERT INTO cds (media_id, interpret) VALUES (last_insert_rowid(), ?);";
 		
@@ -116,17 +144,17 @@ public class DatabaseManager {
 				PreparedStatement psFilms = conn.prepareStatement(sInsertCDs)) {
 			
 			//Einfügen in media
-			psMedia.setString(1, title);
-			psMedia.setInt(2, amount);
+			psMedia.setString(1, cd.getTitle());
+			psMedia.setInt(2, cd.getAmount());
 			psMedia.executeUpdate();
 			
 			//Einfügen in cds
-			psFilms.setString(1, interpret);
+			psFilms.setString(1, cd.getinterpret());
 			psFilms.executeUpdate();
 			
-			System.out.println("CD eingefügt");
+			return true;
 		} catch (SQLException e) {
-			System.out.println("Fehler beim Einfügen der CD: " + e.getMessage());
+			return false;
 		}	
 	}
 
@@ -202,4 +230,101 @@ public class DatabaseManager {
 		}
 		return alCDs;
 	}
+	
+	/**
+	 * Film aktualisieren
+	 * @param id       ID des Films
+	 * @param newTitle Neuer Titel
+	 * @param newAmount Neue Anzahl
+	 * @return true, wenn erfolgreich
+	 */
+	private boolean updateFilm(Film film) {
+	    String sql = "UPDATE media SET title = ?, amount = ? WHERE id = ? AND type = 'Film'";
+	    try (Connection conn = connect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setString(1, film.getTitle());
+	        ps.setInt(2, film.getAmount());
+	        ps.setInt(3, film.getID());
+	        int rows = ps.executeUpdate();
+	        return rows > 0;
+	    } catch (SQLException e) {
+	        System.err.println("Fehler beim Aktualisieren des Films: " + e.getMessage());
+	        return false;
+	    }
+	}
+
+	/**
+	 * CD aktualisieren
+	 * @param id         ID der CD
+	 * @param newTitle   Neuer Titel
+	 * @param newInterpret Neuer Interpret
+	 * @param newAmount  Neue Anzahl
+	 * @return true, wenn erfolgreich
+	 */
+	private boolean updateCD(CD cd) {
+	    String sqlMedia = "UPDATE media SET title = ?, amount = ? WHERE id = ? AND type = 'CD'";
+	    String sqlCD = "UPDATE cds SET interpret = ? WHERE media_id = ?";
+	    try (Connection conn = connect()) {
+	        conn.setAutoCommit(false);
+
+	        try (PreparedStatement psMedia = conn.prepareStatement(sqlMedia);
+	             PreparedStatement psCD = conn.prepareStatement(sqlCD)) {
+
+	            psMedia.setString(1, cd.getTitle());
+	            psMedia.setInt(2, cd.getAmount());
+	            psMedia.setInt(3, cd.getID());
+	            psMedia.executeUpdate();
+
+	            psCD.setString(1, cd.getinterpret());
+	            psCD.setInt(2, cd.getID());
+	            psCD.executeUpdate();
+
+	            conn.commit();
+	            return true;
+	        } catch (SQLException e) {
+	            conn.rollback();
+	            System.err.println("Fehler beim Aktualisieren der CD: " + e.getMessage());
+	            return false;
+	        } finally {
+	            conn.setAutoCommit(true);
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Fehler beim Aktualisieren der CD (Verbindung): " + e.getMessage());
+	        return false;
+	    }
+	}
+
+	/**
+	 * Film löschen
+	 * @param id ID des Films
+	 * @return true, wenn erfolgreich
+	 */
+	private boolean deleteFilm(Film film) {
+	    String sql = "DELETE FROM media WHERE id = ? AND type = 'Film'";
+	    try (Connection conn = connect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setInt(1, film.getID());
+	        int rows = ps.executeUpdate();
+	        return rows > 0;
+	    } catch (SQLException e) {
+	        System.err.println("Fehler beim Löschen des Films: " + e.getMessage());
+	        return false;
+	    }
+	}
+
+	/**
+	 * CD löschen
+	 * @param id ID der CD
+	 * @return true, wenn erfolgreich
+	 */
+	private boolean deleteCD(CD cd) {
+	    String sql = "DELETE FROM media WHERE id = ? AND type = 'CD'";
+	    try (Connection conn = connect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setInt(1, cd.getID());
+	        int rows = ps.executeUpdate();
+	        return rows > 0;
+	    } catch (SQLException e) {
+	        System.err.println("Fehler beim Löschen der CD: " + e.getMessage());
+	        return false;
+	    }
+	}
+
 }

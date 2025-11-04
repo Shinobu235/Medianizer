@@ -3,6 +3,7 @@ package com.moni.medianizer.app.view;
 import java.util.ArrayList;
 
 import com.moni.medianizer.app.Constants;
+import com.moni.medianizer.app.controller.ThirdGUIListenerFX;
 import com.moni.medianizer.app.model.CD;
 import com.moni.medianizer.app.model.Media;
 
@@ -34,8 +35,6 @@ public class ThirdGUI<T extends Media> {
             Platform.runLater(this::createGUI);
             return;
         }
-
-        System.out.println("FX läuft im FX-Thread: " + Platform.isFxApplicationThread());
 		
 		BorderPane panel = new BorderPane();
 		
@@ -63,6 +62,10 @@ public class ThirdGUI<T extends Media> {
 		tvMedia.getColumns().add(colAmount);
 		
 		tvMedia.setItems(olMedia);
+		
+		ThirdGUIListenerFX<T> listener = new ThirdGUIListenerFX<>(tvMedia);
+		btnEdit.setOnAction(listener);
+		btnDelete.setOnAction(listener);
 		
 		panel.setTop(hbBtnBox);
 		panel.setCenter(tvMedia);

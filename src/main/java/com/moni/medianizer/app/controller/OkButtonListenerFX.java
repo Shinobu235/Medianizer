@@ -24,10 +24,10 @@ public class OkButtonListenerFX implements EventHandler<ActionEvent> {
         this.input = input;
 
         // DummyDaten
-        DatabaseManager.getInstance().insertFilm("Film eins", 1);
-        DatabaseManager.getInstance().insertFilm("Film zwei", 2);
-        DatabaseManager.getInstance().insertCD("CD eins", "Interpret eins", 11);
-        DatabaseManager.getInstance().insertCD("CD zwei", "Interpret zwei", 22);
+//        DatabaseManager.getInstance().insert(new Film(0, "Film eins", 1));
+//        DatabaseManager.getInstance().insert(new Film(0, "Film zwei", 2));
+//        DatabaseManager.getInstance().insert(new CD(0, "CD eins", 11, "Interpret eins"));
+//        DatabaseManager.getInstance().insert(new CD(0, "CD zwei", 22, "Interpret zwei"));
     }
 
     @Override
@@ -61,7 +61,7 @@ public class OkButtonListenerFX implements EventHandler<ActionEvent> {
         }
 
         if (alCDs.isEmpty()) {
-            new SecondGUIFX(sType, sTitle, sInterpret);
+            new SecondGUIFX(new CD(0, sTitle, 0, sInterpret));
         } else {
             new ThirdGUI<CD>(alCDs);
         }
@@ -77,7 +77,7 @@ public class OkButtonListenerFX implements EventHandler<ActionEvent> {
         }
 
         if (alFilme.isEmpty()) {
-            new SecondGUIFX(sType, sTitle);
+            new SecondGUIFX(new Film(0, sTitle, 0));
         } else {
             new ThirdGUI<Film>(alFilme);
         }

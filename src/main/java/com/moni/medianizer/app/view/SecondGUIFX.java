@@ -3,6 +3,8 @@ package com.moni.medianizer.app.view;
 import com.moni.medianizer.app.Constants;
 import com.moni.medianizer.app.controller.InsertButtonListenerFX;
 import com.moni.medianizer.app.controller.MediaListenerFX;
+import com.moni.medianizer.app.model.CD;
+import com.moni.medianizer.app.model.Media;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,23 +18,20 @@ import javafx.stage.Stage;
 
 public class SecondGUIFX {
 
-    private final String sType;
-    private final String sTitle;
-    private final String sInterpret;
-
+    private final Media media;
+    private final Runnable callBack;
     private final SelectPanelFX sPanel = new SelectPanelFX();
     private final TextField tfAmount = new TextField();
-    private final Button btnInsert = new Button(Constants.S_INSERT);
-
-    public SecondGUIFX(String type, String title, String interpret) {
-        this.sType = type;
-        this.sTitle = title;
-        this.sInterpret = interpret;
-        createGUI();
+    private final Button btnInsert = new Button(Constants.S_SAVE);
+    
+    public SecondGUIFX(Media media, Runnable callBack) {
+    	this.media = media;
+    	this.callBack = callBack;
+    	createGUI();
     }
-
-    public SecondGUIFX(String type, String title) {
-        this(type, title, null);
+    
+    public SecondGUIFX(Media media) {
+        this(media, null);
     }
 
     private void createGUI() {
@@ -40,10 +39,12 @@ public class SecondGUIFX {
         Stage stage = new Stage();
         stage.setTitle(Constants.S_APP_NAME);
 
-        sPanel.setType(sType);
-        sPanel.setTitle(sTitle);
-        if (sInterpret != null) {
-            sPanel.setInterpret(sInterpret);
+        sPanel.setType(media.getType());
+        sPanel.setTitle(media.getTitle());
+        if (media instanceof CD) {
+        	if (((CD) media).getinterpret() != null) {
+        		sPanel.setInterpret(((CD) media).getinterpret());
+        	}
         }
 
         MediaListenerFX mediaListener = new MediaListenerFX(sPanel, selectedType -> {});
@@ -56,6 +57,9 @@ public class SecondGUIFX {
 
         Label lblAmount = new Label(Constants.S_AMOUNT);
         tfAmount.setPromptText("z. B. 3");
+        if (media.getAmount() != 0) {
+        	tfAmount.setText(Integer.toString(media.getAmount()));
+        }
         tfAmount.setPrefWidth(80);
 
         tfAmount.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -66,10 +70,15 @@ public class SecondGUIFX {
 
         btnInsert.setOnAction(e -> {
             try {
-                int iAmount = Integer.parseInt(tfAmount.getText());
+                media.setAmount(Integer.parseInt(tfAmount.getText()));
+                media.setTitle(sPanel.getTitle());
                 InsertButtonListenerFX insertListener =
-                        new InsertButtonListenerFX(sPanel, iAmount);
+                        new InsertButtonListenerFX(sPanel, media);
                 insertListener.handleInsert();
+                
+                if (callBack != null) {
+                    callBack.run();
+                }
                 stage.close();
             } catch (NumberFormatException ex) {
                 new Alert(Alert.AlertType.ERROR, "Bitte eine gültige Zahl eingeben.").showAndWait();

@@ -31,11 +31,6 @@ public class MediaListenerFX implements ChangeListener<String> {
             input.setTitleEnabled(true);
             input.clearInterpret();
             input.setInterpretEnabled(false);
-        } else {
-            input.clearTitle();
-            input.clearInterpret();
-            input.setTitleEnabled(false);
-            input.setInterpretEnabled(false);
         }
     }
 }

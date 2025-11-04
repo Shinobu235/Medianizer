@@ -25,5 +25,14 @@ public abstract class Media {
 	}
 	public String getType() {
 		return sType;
-	}	
+	}
+
+	public void setAmount(int amount) {
+		this.iAmount = amount;
+	}
+
+	public void setTitle(String title) {
+		this.sTitle = title;
+	}
+	
 }

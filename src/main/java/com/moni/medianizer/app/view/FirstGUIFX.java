@@ -17,12 +17,12 @@ public class FirstGUIFX extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		
-        SelectPanelFX sPane = new SelectPanelFX();
-        Button btnOK = new Button(Constants.S_OK);
+		SelectPanelFX sPane = new SelectPanelFX();
+	    Button btnOK = new Button(Constants.S_OK);
         btnOK.setDisable(true);
 
         MediaListenerFX mediaListener = new MediaListenerFX(sPane, selected -> {
-            btnOK.setDisable(selected.equals(Constants.S_DEFAULT));
+            btnOK.setDisable(selected.equals(null));
         });
 
         sPane.getComboBox().valueProperty().addListener(mediaListener);
