@@ -12,6 +12,9 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+/**
+ * Erste initiale Benutzerschnittstelle
+ */
 public class FirstGUIFX extends Application {
 
 	@Override
@@ -20,7 +23,8 @@ public class FirstGUIFX extends Application {
 		SelectPanelFX sPane = new SelectPanelFX();
 	    Button btnOK = new Button(Constants.S_OK);
         btnOK.setDisable(true);
-
+        
+        //Listener für die Dropbox
         MediaListenerFX mediaListener = new MediaListenerFX(sPane, selected -> {
             btnOK.setDisable(selected.equals(null));
         });

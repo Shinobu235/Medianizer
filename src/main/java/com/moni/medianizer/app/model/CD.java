@@ -2,6 +2,9 @@ package com.moni.medianizer.app.model;
 
 import com.moni.medianizer.app.Constants;
 
+/**
+ * Vorlage CD
+ */
 public class CD extends Media {
 	
 	private String sInterpret;
@@ -12,8 +15,12 @@ public class CD extends Media {
 		this.sInterpret = interpret;
 	}
 
-	public String getinterpret() {
+	public String getInterpret() {
 		return sInterpret;
+	}
+	
+	public void setInterpret(String interpret) {
+		this.sInterpret = interpret;
 	}
 	
 }

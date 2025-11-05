@@ -7,6 +7,10 @@ import com.moni.medianizer.app.view.TypeSelectionCallback;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+/**
+ * Listener für Drop-Down-Menü zur Medienwahl
+ * Sorgt für das Ein- und Ausblenden der Felder
+ */
 public class MediaListenerFX implements ChangeListener<String> {
 
     private final InputProvider input;
@@ -19,11 +23,15 @@ public class MediaListenerFX implements ChangeListener<String> {
 
     @Override
     public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-        if (newValue == null) return;
-
+        
+    	if (newValue == null) return;
+    	
+    	
         if (call != null) {
             call.selectionChanged(newValue);
         }
+        
+        //Ein- und Ausblenden von Textfeldern
         if (newValue.equals(Constants.S_CD)) {
             input.setTitleEnabled(true);
             input.setInterpretEnabled(true);

@@ -1,6 +1,5 @@
 #Maven 
 /target/
-#dummyfile_dont_exist.txt
 
 #Eclipse
 .classpath

@@ -1,5 +1,8 @@
 package com.moni.medianizer.app.model;
 
+/**
+ * Vorlage Medium
+ */
 public abstract class Media {
 	
 	private int iID;

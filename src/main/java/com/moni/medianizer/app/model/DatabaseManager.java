@@ -2,6 +2,7 @@ package com.moni.medianizer.app.model;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * Datenbankverbindungen 
@@ -9,8 +10,14 @@ import java.util.ArrayList;
 public class DatabaseManager {
 	private static final String DB_URL = "jdbc:sqlite:src/main/resources/data/library.db";
 	
+	private static final Logger LOGGER = Logger.getLogger(DatabaseManager.class.getName());
+	
 	private static DatabaseManager instance;
 	
+	/**
+	 * Singleton
+	 * @return instance - Objekt des DatabaseManagers
+	 */
 	public static DatabaseManager getInstance() {
 		
 		if (instance == null) {
@@ -24,12 +31,17 @@ public class DatabaseManager {
 		createTables();
 	}
 	
+	/**
+	 * Datenbank-Verbindung
+	 * @return conn
+	 * @throws SQLException
+	 */
 	private Connection connect() throws SQLException {
 		Connection conn = null;
 		try {
 			conn = DriverManager.getConnection(DB_URL);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.severe("Fehler beim Connect: " + e.getMessage());
 		}
 		return conn;
 	}
@@ -38,10 +50,6 @@ public class DatabaseManager {
 	 * Tabelle erstellen
 	 */
 	private void createTables() {
-		//Drop befehle löschen, wenn Duplikate nicht mehr  möglich sind!
-		String sDropMedia = "DROP TABLE IF EXISTS media;";
-		String sDropFilms = "DROP TABLE IF EXISTS films;";
-		String sDropCDs = "DROP TABLE IF EXISTS cds;";
 		
 		String sCreateMedia = "CREATE TABLE IF NOT EXISTS media ("
 				+ "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -60,18 +68,20 @@ public class DatabaseManager {
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			
-			stmt.execute(sDropMedia);
-			stmt.execute(sDropFilms);
-			stmt.execute(sDropCDs);
 			stmt.execute(sCreateMedia);
 			stmt.execute(sCreateFilm);
 			stmt.execute(sCreateCD);
 			
 		} catch (SQLException e) {
-			System.err.println("Fehler beim Erstellen der Tabelle: " + e.getMessage());
+			LOGGER.severe("Fehler beim Erstellen der Datenbanktabellen: " + e.getMessage());
 		}
 	}
 	
+	/**
+	 * Medium einfügen
+	 * @param media
+	 * @return true bei Erfolg
+	 */
 	public boolean insert(Media media) {
 		if (media instanceof Film) {
 			return insertFilm((Film) media);
@@ -82,6 +92,11 @@ public class DatabaseManager {
 		}
 	}
 	
+	/**
+	 * Medium bearbeiten
+	 * @param media
+	 * @return true bei Erfolg
+	 */
 	public boolean update(Media media) {
 		if (media instanceof Film) {
 			return updateFilm((Film) media);
@@ -92,6 +107,11 @@ public class DatabaseManager {
 		}
 	}
 	
+	/**
+	 * Medium löschen
+	 * @param media
+	 * @return true bei Erfolg
+	 */
 	public boolean delete(Media media) {
 		if (media instanceof Film) {
 			return deleteFilm((Film) media);
@@ -104,8 +124,8 @@ public class DatabaseManager {
 	
 	/**
 	 * Film einfügen
-	 * @param title
-	 * @param amount
+	 * @param film
+	 * @return true bei Erfolg
 	 */
 	private boolean insertFilm(Film film) {
 		
@@ -125,6 +145,7 @@ public class DatabaseManager {
 			
 			return true;
 		} catch (SQLException e) {
+			LOGGER.severe("Fehler beim Film einfügen: " + e.getMessage());
 			return false;
 		}
 		
@@ -132,9 +153,8 @@ public class DatabaseManager {
 	
 	/**
 	 * CD einfügen
-	 * @param title
-	 * @param interpret
-	 * @param amount
+	 * @param cd
+	 * @return true bei Erfolg
 	 */
 	private boolean insertCD(CD cd) {
 		String sInsertMedia = "INSERT INTO 	media (title, amount, type) VALUES (?, ?, 'CD');";
@@ -149,11 +169,12 @@ public class DatabaseManager {
 			psMedia.executeUpdate();
 			
 			//Einfügen in cds
-			psFilms.setString(1, cd.getinterpret());
+			psFilms.setString(1, cd.getInterpret());
 			psFilms.executeUpdate();
 			
 			return true;
 		} catch (SQLException e) {
+			LOGGER.severe("Fehler beim CD einfügen: " + e.getMessage());
 			return false;
 		}	
 	}
@@ -161,7 +182,7 @@ public class DatabaseManager {
 	/**
 	 * Film in DB suchen
 	 * @param title
-	 * @return arrayListFilme
+	 * @return ArrayList mit Filmen
 	 */
 	public ArrayList<Film> selectFilm(String title) {
 		ArrayList<Film> alFilme = new ArrayList<Film>();
@@ -172,7 +193,7 @@ public class DatabaseManager {
 			ps.setString(1, "%" + title + "%");
 			
 			try (ResultSet rs = ps.executeQuery()) {
-				
+				//Tabelle mit Ergebnissen füllen
 				while (rs.next()) {
 					int iID = rs.getInt("id");
 					String sTitle = rs.getString("title");
@@ -183,7 +204,7 @@ public class DatabaseManager {
 				}
 			}
 		} catch (SQLException e) {
-			System.out.println("Fehler beim Auslesen der Filme: " + e.getMessage());
+			LOGGER.severe("Fehler bei der Film-Suche: " + e.getMessage());
 		}
 		return alFilme;
 	}
@@ -192,15 +213,18 @@ public class DatabaseManager {
 	 * CD in DB suchen
 	 * @param title
 	 * @param interpret
-	 * @return arrayListCDs
+	 * @return ArrayList aus CDs
 	 */
 	public ArrayList<CD> selectCD(String title, String interpret) {
 		ArrayList<CD> alCDs = new ArrayList<CD>();
 		String sSQL = "SELECT m.id, m.title, m.amount, c.interpret FROM media m JOIN cds c ON m.id = c.media_id WHERE 1 = 1";
 		
+		//Leerer Titel
 		if (title != null && !title.isEmpty()) {
 			sSQL += " AND m.title LIKE ?";
 		}
+		
+		//Leerer Interpret
 		if (interpret != null && !interpret.isEmpty()) {
 			sSQL += " AND c.interpret LIKE ?";
 		}
@@ -208,13 +232,17 @@ public class DatabaseManager {
 		try (Connection conn = connect(); PreparedStatement ps = conn.prepareStatement(sSQL)) {
 			
 			int i = 1;
+			//Leerer Titel
 			if (title != null && !title.isEmpty()) {
 				ps.setString(i++, "%" + title + "%");
 			}
+			//Leerer Interpret
 			if (interpret != null && !interpret.isEmpty()) {
 				ps.setString(i++, "%" + interpret + "%");
 			}
+			
 			try (ResultSet rs = ps.executeQuery()) {
+				//Tabelle mit Ergebnissen füllen
 				while (rs.next()) {
 					int iID = rs.getInt("id");
 					String sTitle = rs.getString("title");
@@ -226,39 +254,35 @@ public class DatabaseManager {
 				}
 			}
 		} catch (SQLException e) {
-			System.out.println("Fehler beim Auslesen der CDs: " + e.getMessage());
+			LOGGER.severe("Fehler bei der CD-Suche: " + e.getMessage());
 		}
 		return alCDs;
 	}
 	
 	/**
 	 * Film aktualisieren
-	 * @param id       ID des Films
-	 * @param newTitle Neuer Titel
-	 * @param newAmount Neue Anzahl
-	 * @return true, wenn erfolgreich
+	 * @param film
+	 * @return true bei Erfolg
 	 */
 	private boolean updateFilm(Film film) {
 	    String sql = "UPDATE media SET title = ?, amount = ? WHERE id = ? AND type = 'Film'";
 	    try (Connection conn = connect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+	    	//Eintrag ändern
 	        ps.setString(1, film.getTitle());
 	        ps.setInt(2, film.getAmount());
 	        ps.setInt(3, film.getID());
 	        int rows = ps.executeUpdate();
 	        return rows > 0;
 	    } catch (SQLException e) {
-	        System.err.println("Fehler beim Aktualisieren des Films: " + e.getMessage());
+	    	LOGGER.severe("Fehler beim Film-Update: " + e.getMessage());
 	        return false;
 	    }
 	}
 
 	/**
 	 * CD aktualisieren
-	 * @param id         ID der CD
-	 * @param newTitle   Neuer Titel
-	 * @param newInterpret Neuer Interpret
-	 * @param newAmount  Neue Anzahl
-	 * @return true, wenn erfolgreich
+	 * @param cd
+	 * @return true bei Erfolg
 	 */
 	private boolean updateCD(CD cd) {
 	    String sqlMedia = "UPDATE media SET title = ?, amount = ? WHERE id = ? AND type = 'CD'";
@@ -268,13 +292,15 @@ public class DatabaseManager {
 
 	        try (PreparedStatement psMedia = conn.prepareStatement(sqlMedia);
 	             PreparedStatement psCD = conn.prepareStatement(sqlCD)) {
-
+	        	
+	        	//Aktualisierung in Tabelle media
 	            psMedia.setString(1, cd.getTitle());
 	            psMedia.setInt(2, cd.getAmount());
 	            psMedia.setInt(3, cd.getID());
 	            psMedia.executeUpdate();
-
-	            psCD.setString(1, cd.getinterpret());
+	            
+	            //Aktualisierung in Tabelle cd
+	            psCD.setString(1, cd.getInterpret());
 	            psCD.setInt(2, cd.getID());
 	            psCD.executeUpdate();
 
@@ -282,13 +308,13 @@ public class DatabaseManager {
 	            return true;
 	        } catch (SQLException e) {
 	            conn.rollback();
-	            System.err.println("Fehler beim Aktualisieren der CD: " + e.getMessage());
+	            LOGGER.severe("Fehler beim CD-Update: " + e.getMessage());
 	            return false;
 	        } finally {
 	            conn.setAutoCommit(true);
 	        }
 	    } catch (SQLException e) {
-	        System.err.println("Fehler beim Aktualisieren der CD (Verbindung): " + e.getMessage());
+	    	LOGGER.severe("Fehler beim CD-Update: " + e.getMessage());
 	        return false;
 	    }
 	}
@@ -296,16 +322,17 @@ public class DatabaseManager {
 	/**
 	 * Film löschen
 	 * @param id ID des Films
-	 * @return true, wenn erfolgreich
+	 * @return true bei Erfolg
 	 */
 	private boolean deleteFilm(Film film) {
 	    String sql = "DELETE FROM media WHERE id = ? AND type = 'Film'";
 	    try (Connection conn = connect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+	    	//Eintrag löschen
 	        ps.setInt(1, film.getID());
 	        int rows = ps.executeUpdate();
 	        return rows > 0;
 	    } catch (SQLException e) {
-	        System.err.println("Fehler beim Löschen des Films: " + e.getMessage());
+	    	LOGGER.severe("Fehler beim Film-Löschen: " + e.getMessage());
 	        return false;
 	    }
 	}
@@ -313,16 +340,17 @@ public class DatabaseManager {
 	/**
 	 * CD löschen
 	 * @param id ID der CD
-	 * @return true, wenn erfolgreich
+	 * @return true bei Erfolg
 	 */
 	private boolean deleteCD(CD cd) {
 	    String sql = "DELETE FROM media WHERE id = ? AND type = 'CD'";
 	    try (Connection conn = connect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+	    	//Eintrag löschen
 	        ps.setInt(1, cd.getID());
 	        int rows = ps.executeUpdate();
 	        return rows > 0;
 	    } catch (SQLException e) {
-	        System.err.println("Fehler beim Löschen der CD: " + e.getMessage());
+	    	LOGGER.severe("Fehler beim CD-Löschen: " + e.getMessage());
 	        return false;
 	    }
 	}

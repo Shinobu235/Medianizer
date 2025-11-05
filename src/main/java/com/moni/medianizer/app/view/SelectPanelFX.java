@@ -10,6 +10,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 
+/**
+ * Panel mit Typ/Titel/Interpret
+ * Wird in First und SecondGUI benötigt
+ */
 public class SelectPanelFX extends HBox implements InputProvider {
 
     private ComboBox<String> cbTypes;
@@ -21,7 +25,10 @@ public class SelectPanelFX extends HBox implements InputProvider {
     public SelectPanelFX() {
         init();
     }
-
+    
+    /**
+     * Initialisiert das Panel
+     */
     private void init() {
     	 setSpacing(10);
          setPadding(new Insets(10));

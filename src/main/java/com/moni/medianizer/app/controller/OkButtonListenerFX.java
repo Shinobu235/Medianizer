@@ -12,7 +12,11 @@ import com.moni.medianizer.app.view.ThirdGUI;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 
+/**
+ * Listener für den OK-Button der FirstGUI
+ */
 public class OkButtonListenerFX implements EventHandler<ActionEvent> {
 	
 	private InputProvider input;
@@ -22,12 +26,6 @@ public class OkButtonListenerFX implements EventHandler<ActionEvent> {
 
 	public OkButtonListenerFX(InputProvider input) {
         this.input = input;
-
-        // DummyDaten
-//        DatabaseManager.getInstance().insert(new Film(0, "Film eins", 1));
-//        DatabaseManager.getInstance().insert(new Film(0, "Film zwei", 2));
-//        DatabaseManager.getInstance().insert(new CD(0, "CD eins", 11, "Interpret eins"));
-//        DatabaseManager.getInstance().insert(new CD(0, "CD zwei", 22, "Interpret zwei"));
     }
 
     @Override
@@ -35,53 +33,80 @@ public class OkButtonListenerFX implements EventHandler<ActionEvent> {
         sType = input.getType();
         sTitle = input.getTitle();
         sInterpret = input.getInterpret();
-
-        if (sType.equals(Constants.S_FILM)) {
-            handleFilm();
-        } else if (sType.equals(Constants.S_CD)) {
-            handleCD();
+        
+        //Unterschied Film/CD bei getroffener Wahl
+        if (sType != null) {
+	        if (sType.equals(Constants.S_FILM)) {
+	            handleFilm();
+	        } else if (sType.equals(Constants.S_CD)) {
+	            handleCD();
+	        }
         }
     }
-
-    private void handleCD() {
-        ArrayList<CD> alCDs = new ArrayList<>();
-
-        if ((sTitle == null) || sTitle.isEmpty()) {
-            if ((sInterpret == null) || sInterpret.isEmpty()) {
-                System.out.println("Bitte Titel oder Interpret eingeben");
-            } else {
-                alCDs = DatabaseManager.getInstance().selectCD(null, sInterpret);
-            }
-        } else {
-            if ((sInterpret != null) && (!sInterpret.isEmpty())) {
-                alCDs = DatabaseManager.getInstance().selectCD(sTitle, sInterpret);
-            } else {
-                alCDs = DatabaseManager.getInstance().selectCD(sTitle, null);
-            }
-        }
-
-        if (alCDs.isEmpty()) {
-            new SecondGUIFX(new CD(0, sTitle, 0, sInterpret));
-        } else {
-            new ThirdGUI<CD>(alCDs);
-        }
-    }
-
+    
+    /**
+     * Film-Suche und anschließende GUI Reaktion
+     */
     private void handleFilm() {
         ArrayList<Film> alFilme = new ArrayList<>();
-
+        
+        //Leeren Titel abfangen
         if ((sTitle != null) && (!sTitle.isEmpty())) {
             alFilme = DatabaseManager.getInstance().selectFilm(sTitle);
         } else {
-            System.out.println("Bitte Titel eingeben");
+        	new Alert(Alert.AlertType.WARNING, "Bitte Titel eingeben.").showAndWait();
+        	return;
         }
-
+        
+        //Gui Aufrufe, je nach Ergebnis
         if (alFilme.isEmpty()) {
             new SecondGUIFX(new Film(0, sTitle, 0));
         } else {
             new ThirdGUI<Film>(alFilme);
         }
     }
+    
+    /**
+     * CD-Suche und anschließende GUI Reaktion
+     */
+    private void handleCD() {
+        String title = (sTitle == null) ? null : sTitle.trim();
+        String interpret = (sInterpret == null) ? null : sInterpret.trim();
+
+        ArrayList<CD> alCDs;
+
+        // Nichts eingegeben
+        if ((title == null || title.isEmpty()) && (interpret == null || interpret.isEmpty())) {
+            new Alert(Alert.AlertType.WARNING, "Bitte gib Titel oder Interpret ein.").showAndWait();
+            return;
+        }
+
+        // Nur Interpret
+        if (title == null || title.isEmpty()) {
+            alCDs = DatabaseManager.getInstance().selectCD(null, interpret);
+        }
+        // Nur Titel
+        else if (interpret == null || interpret.isEmpty()) {
+            alCDs = DatabaseManager.getInstance().selectCD(title, null);
+        }
+        // Titel UND Interpret – mit Fallback auf nur Titel
+        else {
+            alCDs = DatabaseManager.getInstance().selectCD(title, interpret);
+            if (alCDs.isEmpty()) {
+                // Fallback, falls der Interpret in der DB anders gespeichert wurde
+                alCDs = DatabaseManager.getInstance().selectCD(title, null);
+            }
+        }
+
+        if (alCDs.isEmpty()) {
+            // Nichts gefunden - Anlegen
+            new SecondGUIFX(new CD(0, title, 0, interpret));
+        } else {
+            // Treffer - anzeigen
+            new ThirdGUI<>(alCDs);
+        }
+    }
+
 }
 
 

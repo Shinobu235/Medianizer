@@ -17,12 +17,15 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
 
+/**
+ * Listener für die ThirdGUI
+ * @param <T>
+ */
 public class ThirdGUIListenerFX<T extends Media> implements EventHandler<ActionEvent> {
 	
 	 private TableView<T> tableView;
 	 private String sType;
 	 private Media media;
-	 private boolean bSuccess;
 	 
 	 public ThirdGUIListenerFX(TableView<T> tvMedia) {
 		 this.tableView = tvMedia;
@@ -30,14 +33,25 @@ public class ThirdGUIListenerFX<T extends Media> implements EventHandler<ActionE
 
 	@Override
 	public void handle(ActionEvent evt) {
-
+		
+		T selected = tableView.getSelectionModel().getSelectedItem();
+		
+		//Falls keine Zeile gewählt wurde
+	    if (selected == null) {
+	        Alert alert = new Alert(Alert.AlertType.WARNING);
+	        alert.setTitle("Keine Auswahl");
+	        alert.setHeaderText(null);
+	        alert.setContentText("Ohne Auswahl ist weder Bearbeiten noch Löschen möglich.");
+	        alert.showAndWait();
+	        return;
+	    }
+		
 		Button btn = (Button) evt.getSource();
         String text = btn.getText();
         media = tableView.getSelectionModel().getSelectedItem();
         sType = media.getType();
         
-        bSuccess = false;
-
+        //Unterscheidung Bearbeiten/löschen
         switch (text) {
             case Constants.S_EDIT -> handleUpdate();
             case Constants.S_DELETE -> handleDelete();
@@ -46,9 +60,12 @@ public class ThirdGUIListenerFX<T extends Media> implements EventHandler<ActionE
         
         
 	}
-
+	
+	/**
+	 * Eintrag bearbeiten
+	 */
 	private void handleUpdate() {
-		
+		//Tabelle refreshen
 		Runnable refreshTable = () -> {
 	        Platform.runLater(() -> {
 	            if (sType.equals(Constants.S_FILM)) {
@@ -66,29 +83,26 @@ public class ThirdGUIListenerFX<T extends Media> implements EventHandler<ActionE
 	    };
 	    
 		new SecondGUIFX(media, refreshTable);
-		
-//		if (bSuccess) {
-//	    	new Alert(Alert.AlertType.INFORMATION, "Eintrag erfolgreich bearbeitet.").showAndWait();
-//	    } else {
-//	    	new Alert(Alert.AlertType.ERROR, "Bearbeiten fehlgeschlagen.").showAndWait();
-//	    }
 	}
-
+	
+	/**
+	 * Eintrag löschen
+	 */
 	private void handleDelete() {
-
+		boolean bSuccess = false;
+		//Unterscheidung Film/CD
 	    if (sType.equals(Constants.S_FILM) && media instanceof Film film) {
 	    	bSuccess = DatabaseManager.getInstance().delete(film);
-	    	System.out.println("delete " + ((Film) media).getTitle());
 	    } else if (sType.equals(Constants.S_CD) && media instanceof CD cd) {
 	    	bSuccess = DatabaseManager.getInstance().delete(cd);
-	    	System.out.println("delete " + ((CD) media).getTitle());
 	    }
 	    tableView.getItems().remove(media);
 	    
-//	    if (bSuccess) {
-//	    	new Alert(Alert.AlertType.INFORMATION, "Eintrag erfolgreich gelöscht.").showAndWait();
-//	    } else {
-//	    	new Alert(Alert.AlertType.ERROR, "Löschen fehlgeschlagen.").showAndWait();
-//	    }
+	    //Dialog je nachdem, ob delete erfolgreich
+	    if (bSuccess) {
+	    	new Alert(Alert.AlertType.INFORMATION, "Eintrag erfolgreich gelöscht.").showAndWait();
+	    } else {
+	    	new Alert(Alert.AlertType.ERROR, "Löschen fehlgeschlagen.").showAndWait();
+	    }
 	}
 }

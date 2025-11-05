@@ -20,6 +20,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+/**
+ * Dritte Benutzerschnittstelle
+ * @param <T>
+ */
 public class ThirdGUI<T extends Media> {
 	
 	private ObservableList<T> olMedia;
@@ -29,6 +33,9 @@ public class ThirdGUI<T extends Media> {
 		createGUI();
 	}
 	
+	/**
+	 * Erstellt die grafische Oberfläche
+	 */
 	private void createGUI() {
 		
 		if (!Platform.isFxApplicationThread()) {
@@ -51,9 +58,10 @@ public class ThirdGUI<T extends Media> {
 		colTitel.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getTitle()));
 		tvMedia.getColumns().add(colTitel);
 		
+		//Berücksichtigt Interpret bei CD
 		if (olMedia.get(0) instanceof CD) {
 			TableColumn<T, String> colInterpret = new TableColumn<>(Constants.S_INTERPRET);
-			colInterpret.setCellValueFactory(cell -> new SimpleStringProperty(((CD)cell.getValue()).getinterpret()));
+			colInterpret.setCellValueFactory(cell -> new SimpleStringProperty(((CD)cell.getValue()).getInterpret()));
 			tvMedia.getColumns().add(colInterpret);
 		}
 		
@@ -63,6 +71,7 @@ public class ThirdGUI<T extends Media> {
 		
 		tvMedia.setItems(olMedia);
 		
+		//Listener für Bearbeiten/Löschen
 		ThirdGUIListenerFX<T> listener = new ThirdGUIListenerFX<>(tvMedia);
 		btnEdit.setOnAction(listener);
 		btnDelete.setOnAction(listener);
