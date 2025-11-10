@@ -61,7 +61,6 @@
   			</extension>
 		</extensions>
   		<plugins>
-  			<!--Compiler Plugin-->
   			<plugin>
   				<groupId>org.apache.maven.plugins</groupId>
   				<artifactId>maven-compiler-plugin</artifactId>
@@ -74,15 +73,25 @@
     			<groupId>org.openjfx</groupId>
     			<artifactId>javafx-maven-plugin</artifactId>
     			<version>0.0.8</version>
+
     			<executions>
         			<execution>
             			<goals>
                 			<goal>run</goal>
+                			<goal>jlink</goal>
             			</goals>
         			</execution>
-   				</executions>
+    			</executions>
+
     			<configuration>
         			<mainClass>com.moni.medianizer.app.MainApp</mainClass>
+        			<stripDebug>true</stripDebug>
+        			<compress>2</compress>
+        			<launcher>Medianizer</launcher>
+        			<jlinkImageName>MedianizerApp</jlinkImageName>
+        			<jlinkZipName>MedianizerApp</jlinkZipName>
+       				<addModules>javafx.controls,javafx.fxml,javafx.graphics,javafx.swing</addModules>
+       				<noModule>true</noModule>
     			</configuration>
 			</plugin>
 		</plugins>
