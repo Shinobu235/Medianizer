@@ -4,7 +4,8 @@ import com.moni.medianizer.app.Constants;
 import com.moni.medianizer.app.model.DatabaseManager;
 import com.moni.medianizer.app.model.Media;
 import com.moni.medianizer.app.view.InputProvider;
-import com.moni.medianizer.app.util.AlertHelper;
+
+import javafx.scene.control.Alert;
 
 /**
  * Listener für den Speichern-Button der SecondGUI
@@ -26,7 +27,8 @@ public class InsertButtonListenerFX {
     public void handleInsert() {
     	//Medium muss gewählt und Titel eingegeben sein
         if (input.getType() == null || input.getTitle() == null || input.getTitle().isEmpty()) {
-        	AlertHelper.showWarning("Bitte gib mindestens den Titel ein.");
+            new Alert(Alert.AlertType.WARNING,
+                    "Bitte gib mindestens den Titel ein und wähle ein Medium.").showAndWait();
             return;
         }
         
@@ -36,8 +38,8 @@ public class InsertButtonListenerFX {
         } else if (Constants.S_CD.equals(input.getType())) {
             handleCD();
         } else {
-        	AlertHelper.showWarning("Unbekannter Medientyp: " + input.getType());
-
+            new Alert(Alert.AlertType.WARNING,
+                    "Unbekannter Medientyp: " + input.getType()).showAndWait();
         }
     }
     
@@ -47,23 +49,21 @@ public class InsertButtonListenerFX {
     private void handleFilm() {
     	//Anzahl darf nicht leer sein
         if (media.getAmount() < 0) {
-        	AlertHelper.showWarning("Bitte eine positive Anzahl eingeben.");
+            new Alert(Alert.AlertType.WARNING,
+                    "Bitte eine positive Anzahl eingeben.").showAndWait();
             return;
         }
         
         //Unterschied Insert/Update
-        boolean bSuccess;
         if (media.getID() == 0) {
-        	bSuccess = DatabaseManager.getInstance().insert(media);
-        	AlertHelper.showInfo(bSuccess ? "Film \"" + input.getTitle() + "\" erfolgreich eingefügt."
-                            : "Fehler beim Einfügen des Films.");
-
+        	DatabaseManager.getInstance().insert(media);
+	        new Alert(Alert.AlertType.INFORMATION,
+	                "Film \"" + input.getTitle() + "\" erfolgreich eingefügt.").showAndWait();
         } else {
         	
-        	bSuccess = DatabaseManager.getInstance().update(media);
-            AlertHelper.showInfo(bSuccess ? "Film \"" + input.getTitle() + "\" erfolgreich geändert."
-                            : "Bearbeiten fehlgeschlagen.");
-
+        	DatabaseManager.getInstance().update(media);
+        	new Alert(Alert.AlertType.INFORMATION,
+	                "Film \"" + input.getTitle() + "\" erfolgreich geändert.").showAndWait();
         }
     }
     
@@ -73,23 +73,21 @@ public class InsertButtonListenerFX {
     private void handleCD() {
     	//Anzahl darf nicht leer sein
         if (media.getAmount() < 0) {
-            AlertHelper.showWarning("Bitte eine positive Anzahl eingeben.");
+            new Alert(Alert.AlertType.WARNING,
+                    "Bitte eine positive Anzahl eingeben.").showAndWait();
             return;
         }
         
         //Unterschied Insert/Update
-        boolean success;
         if (media.getID() == 0) {
-            success = DatabaseManager.getInstance().insert(media);
-            AlertHelper.showInfo(success ? "CD \"" + input.getTitle() + "\" von \"" + input.getInterpret() 
-                            + "\" erfolgreich eingefügt."
-                            : "Fehler beim Einfügen der CD.");
+	        DatabaseManager.getInstance().insert(media);
+	        new Alert(Alert.AlertType.INFORMATION,
+	                "CD \"" + input.getTitle() + "\" von \"" + input.getInterpret() + "\" erfolgreich eingefügt.").showAndWait();
         } else {
-            success = DatabaseManager.getInstance().update(media);
-            AlertHelper.showInfo(success ? "CD \"" + input.getTitle() + "\" von \"" + input.getInterpret() 
-                            + "\" erfolgreich geändert."
-                            : "Bearbeiten fehlgeschlagen.");
+        	DatabaseManager.getInstance().update(media);
+        	
+	        new Alert(Alert.AlertType.INFORMATION,
+	                "CD \"" + input.getTitle() + "\" von \"" + input.getInterpret() + "\" erfolgreich geändert.").showAndWait();
         }
-
     }
 }
