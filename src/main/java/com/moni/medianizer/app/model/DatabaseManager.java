@@ -8,9 +8,22 @@ import java.util.logging.Logger;
  * Datenbankverbindungen 
  */
 public class DatabaseManager {
-	private static final String DB_URL = "jdbc:sqlite:src/main/resources/data/library.db";
+	//Verwendung test.db für Tests
+	private static final String DB_URL;
 	
 	private static final Logger LOGGER = Logger.getLogger(DatabaseManager.class.getName());
+
+	static {
+	    // Wenn über System.property ein alternativer Pfad angegeben ist → diesen verwenden
+	    String customPath = System.getProperty("DB_PATH");
+	    if (customPath != null && !customPath.isEmpty()) {
+	        DB_URL = "jdbc:sqlite:" + customPath;
+	    } else {
+	        DB_URL = "jdbc:sqlite:src/main/resources/data/library.db";
+	    }
+	}
+
+
 	
 	private static DatabaseManager instance;
 	
