@@ -133,13 +133,15 @@ public class SecondGUIFX {
                     ArrayList<Film> result = DatabaseManager.getInstance().selectFilm(title);
                     // Case-insensitive prüfen
                     exists = result.stream()
-                            .anyMatch(f -> f.getTitle().equalsIgnoreCase(title));
+                            .anyMatch(f -> f.getTitle().equalsIgnoreCase(title) 
+                            		&& f.getAmount() == Integer.parseInt(sAmount));
                 } else if (media instanceof CD) {
                     ArrayList<CD> result = DatabaseManager.getInstance().selectCD(title, interpret);
                     exists = result.stream()
                             .anyMatch(cd ->
                                     cd.getTitle().equalsIgnoreCase(title)
-                                    && cd.getInterpret().equalsIgnoreCase(interpret));
+                                    && cd.getInterpret().equalsIgnoreCase(interpret) 
+                                    && cd.getAmount() == Integer.parseInt(sAmount));
                 }
 
                 if (exists) {

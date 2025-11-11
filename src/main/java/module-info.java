@@ -1,4 +1,4 @@
-module com.moni.medianizer {
+module medianizer {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;

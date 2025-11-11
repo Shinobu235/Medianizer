@@ -15,6 +15,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableView;
 
 /**
@@ -67,20 +68,23 @@ public class ThirdGUIListenerFX<T extends Media> implements EventHandler<ActionE
 	private void handleUpdate() {
 		//Tabelle refreshen
 		Runnable refreshTable = () -> {
-	        Platform.runLater(() -> {
-	            if (sType.equals(Constants.S_FILM)) {
-	                ArrayList<Film> updatedFilms = DatabaseManager.getInstance().selectFilm("");
-	                @SuppressWarnings("unchecked")
-	                TableView<Film> filmTable = (TableView<Film>) tableView;
-	                filmTable.setItems(FXCollections.observableArrayList(updatedFilms));
-	            } else if (sType.equals(Constants.S_CD)) {
-	                ArrayList<CD> updatedCDs = DatabaseManager.getInstance().selectCD("", "");
-	                @SuppressWarnings("unchecked")
-	                TableView<CD> cdTable = (TableView<CD>) tableView;
-	                cdTable.setItems(FXCollections.observableArrayList(updatedCDs));
-	            }
-	        });
-	    };
+		    Platform.runLater(() -> {
+		        if (sType.equals(Constants.S_FILM)) {
+		            String title = media.getTitle();
+		            ArrayList<Film> updatedFilms = DatabaseManager.getInstance().selectFilm(title);
+		            @SuppressWarnings("unchecked")
+		            TableView<Film> filmTable = (TableView<Film>) tableView;
+		            filmTable.setItems(FXCollections.observableArrayList(updatedFilms));
+		        } else if (sType.equals(Constants.S_CD)) {
+		            String title = media.getTitle();
+		            String interpret = ((CD) media).getInterpret();
+		            ArrayList<CD> updatedCDs = DatabaseManager.getInstance().selectCD(title, interpret);
+		            @SuppressWarnings("unchecked")
+		            TableView<CD> cdTable = (TableView<CD>) tableView;
+		            cdTable.setItems(FXCollections.observableArrayList(updatedCDs));
+		        }
+		    });
+		};
 	    
 		new SecondGUIFX(media, refreshTable);
 	}
@@ -89,20 +93,44 @@ public class ThirdGUIListenerFX<T extends Media> implements EventHandler<ActionE
 	 * Eintrag löschen
 	 */
 	private void handleDelete() {
-		boolean bSuccess = false;
-		//Unterscheidung Film/CD
-	    if (sType.equals(Constants.S_FILM) && media instanceof Film film) {
-	    	bSuccess = DatabaseManager.getInstance().delete(film);
-	    } else if (sType.equals(Constants.S_CD) && media instanceof CD cd) {
-	    	bSuccess = DatabaseManager.getInstance().delete(cd);
-	    }
-	    tableView.getItems().remove(media);
-	    
-	    //Dialog je nachdem, ob delete erfolgreich
-	    if (bSuccess) {
-	    	new Alert(Alert.AlertType.INFORMATION, "Eintrag erfolgreich gelöscht.").showAndWait();
+		// Sicherheitsabfrage vor dem Löschen
+	    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+	    confirm.setTitle("Löschen bestätigen");
+	    confirm.setHeaderText("Willst du diesen Eintrag wirklich löschen?");
+
+	    // Anzeige des Titels (und ggf. Interpreten)
+	    if (media instanceof CD cd) {
+	        confirm.setContentText("CD: \"" + cd.getTitle() + "\" von \"" + cd.getInterpret() + "\"");
+	    } else if (media instanceof Film film) {
+	        confirm.setContentText("Film: \"" + film.getTitle() + "\"");
 	    } else {
-	    	new Alert(Alert.AlertType.ERROR, "Löschen fehlgeschlagen.").showAndWait();
+	        confirm.setContentText(media.getTitle());
+	    }
+
+	    // Dialog anzeigen und Ergebnis auswerten
+	    var result = confirm.showAndWait();
+	    if (result.isEmpty() || result.get() != ButtonType.OK) {
+	        //abbrechen
+	        return;
+	    }
+
+	    // löschen
+	    boolean bSuccess = false;
+
+	    if (sType.equals(Constants.S_FILM) && media instanceof Film film) {
+	        bSuccess = DatabaseManager.getInstance().delete(film);
+	    } else if (sType.equals(Constants.S_CD) && media instanceof CD cd) {
+	        bSuccess = DatabaseManager.getInstance().delete(cd);
+	    }
+
+	    // Eintrag aus Tabelle entfernen
+	    tableView.getItems().remove(media);
+
+	    // Rückmeldung anzeigen
+	    if (bSuccess) {
+	        new Alert(Alert.AlertType.INFORMATION, "Eintrag erfolgreich gelöscht.").showAndWait();
+	    } else {
+	        new Alert(Alert.AlertType.ERROR, "Löschen fehlgeschlagen.").showAndWait();
 	    }
 	}
 }

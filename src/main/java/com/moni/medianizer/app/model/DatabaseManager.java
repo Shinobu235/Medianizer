@@ -8,7 +8,7 @@ import java.util.logging.Logger;
  * Datenbankverbindungen 
  */
 public class DatabaseManager {
-	private static final String DB_URL = "jdbc:sqlite:src/main/resources/data/library.db";
+	private static final String DB_URL = "jdbc:sqlite:data/library.db";
 	
 	private static final Logger LOGGER = Logger.getLogger(DatabaseManager.class.getName());
 	
